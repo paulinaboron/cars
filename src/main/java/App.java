@@ -63,8 +63,8 @@ public class App {
     }};
 
     public static void main(String[] args) {
-        externalStaticFileLocation("C:\\Users\\4pa\\Desktop\\java\\sparkProject\\src\\main\\resources\\public");
-//        externalStaticFileLocation("C:\\Users\\pauli\\Desktop\\java\\sparkProject\\src\\main\\resources\\public");
+//        externalStaticFileLocation("C:\\Users\\4pa\\Desktop\\java\\sparkProject\\src\\main\\resources\\public");
+        externalStaticFileLocation("C:\\Users\\pauli\\sparkProject\\src\\main\\resources\\public");
         post("/add", App::add);
         get("/json", App::getJson);
         post("/delete", App::delete);
@@ -72,7 +72,7 @@ public class App {
         post("/generate", App::generate);
         post("/invoice", App::invoice);
         get("/getInvoice", App::getInvoice);
-//        post("/allCarsInvoice", App::allCarsInvoice);
+        post("/allCarsInvoice", App::allCarsInvoice);
 
     }
 
@@ -147,6 +147,7 @@ public class App {
         for(Car c: cars){
             if(c.getId() == id){
                 car = c;
+                c.setInvoice(true);
                 break;
             }
         }
@@ -189,11 +190,17 @@ public class App {
     }
 
     static String getInvoice(Request req, Response res) throws IOException {
+        String fileName = "invoice" + req.queryParams("uuid") + ".pdf";
         res.type("application/octet-stream"); //
-        res.header("Content-Disposition", "attachment; filename=invoice.pdf"); // nagłówek
+        res.header("Content-Disposition", "attachment; filename=" + fileName); // nagłówek
 
         OutputStream outputStream = res.raw().getOutputStream();
-        outputStream.write(Files.readAllBytes(Path.of("src/main/resources/public/pdfs/invoice.pdf"))); // response pliku do przeglądarki
+        outputStream.write(Files.readAllBytes(Path.of("src/main/resources/public/pdfs/" + fileName))); // response pliku do przeglądarki
+        return null;
+    }
+
+    static String allCarsInvoice(Request req, Response res){
+        Invoice inv = new Invoice("sprzedawca", "kupujący", cars);
         return null;
     }
 

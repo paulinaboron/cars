@@ -10,7 +10,7 @@
 <div>
     <a href="index.html">index</a>
     <a href="cars.html">update/delete</a>
-    <a href="search.html">Search</a>
+    <a href="search.html">Search</a></br>
 
     <button id="random">Generuj bazę samochodów</button>
 
@@ -66,11 +66,15 @@
             tr.appendChild(linkTd)
 
             button.onclick = async()=>{
+                let d = await generateInv(row.id)
+                load();
+            }
+
+            if(row.invoice){
                 let link = document.createElement("a")
-                link.setAttribute('href', "http://google.com");
+                link.setAttribute('href', "/getInvoice?uuid=" + row.uuid);
                 link.innerText = "pobierz"
                 linkTd.appendChild(link)
-                let d = await generateInv(row.id)
             }
         })
     }
