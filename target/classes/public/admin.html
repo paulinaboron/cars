@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cars</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div>
+    <a href="index.html">index</a>
+    <a href="cars.html">update/delete</a>
+    <a href="search.html">Search</a>
+
+    <button id="random">Generuj bazę samochodów</button>
+
+    <table id="tb"></table>
+</div>
+
+<script>
+    load = async()=>{
+        let dane = await fetchPostAsync()
+        console.log(dane)
+
+        document.getElementById("tb").innerHTML = ""
+        dane.forEach(row =>{
+            let tr = document.createElement("tr")
+
+            document.getElementById("tb").appendChild(tr)
+            console.log(row)
+
+            let lp = document.createElement("td")
+            lp.innerText = row.id
+            tr.appendChild(lp)
+
+            let uuid = document.createElement("td")
+            uuid.innerText = row.uuid
+            tr.appendChild(uuid)
+
+            let model = document.createElement("td")
+            model.innerText = row.model
+            tr.appendChild(model)
+
+            let year = document.createElement("td")
+            year.innerText = row.year
+            tr.appendChild(year)
+
+            let airbags = document.createElement("td")
+            row.airbags.forEach(e =>
+                airbags.innerHTML += `${e.desc}: ${e.value}<br>`
+            )
+            tr.appendChild(airbags)
+
+            let color = document.createElement("td")
+            color.style.backgroundColor = row.color
+            tr.appendChild(color)
+
+            let dlt = document.createElement("td")
+            tr.appendChild(dlt)
+
+            let button = document.createElement("button")
+            button.innerText = "Generuj fakturę"
+            dlt.appendChild(button)
+
+            let linkTd = document.createElement("td")
+            tr.appendChild(linkTd)
+
+            button.onclick = async()=>{
+                let link = document.createElement("a")
+                link.setAttribute('href', "http://google.com");
+                link.innerText = "pobierz"
+                linkTd.appendChild(link)
+                let d = await generateInv(row.id)
+            }
+        })
+    }
+
+    fetchPostAsync = async () => {
+
+        const options = {
+            method: "GET",
+        };
+
+        let response = await fetch("/json", options)
+
+        if (!response.ok)
+            return response.status
+        else
+            return await response.json() // response.json
+    }
+
+    generateInv = async (id) =>{
+        const options = {
+            method: "POST",
+            body: JSON.stringify({id: id})
+        };
+
+        let response = await fetch("/invoice", options)
+
+        if (!response.ok)
+            return response.status
+        else
+            return await response // response.json
+
+    }
+
+    document.getElementById("random").onclick = async()=>{
+        const options = {
+            method: "POST",
+            body: JSON.stringify({x:1})
+        };
+
+        let response = await fetch("/generate", options)
+
+        if (!response.ok)
+            return response.status
+        else{
+            await load()
+            return await response
+        }
+            // response.json
+    }
+
+    load()
+
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+*{
+    box-sizing: border-box;
+}
+
+#index{
+    margin: 5px;
+}
+
+td{
+    border: 1px solid black;
+    padding: 0 15px;
+    min-width: 80px;
+    text-align: center;
+}
+
+#update{
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgb(99, 99, 99, .7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 30vh;
+}
+
+#update > *{
+    margin: 10px;
+    width: 150px;
+}
+
+#cancelBtn{
+    margin-right: 0;
+    float: right;
+}
+
+#nav{
+    width: 200px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+    padding: 10px;
+}
+
+#nav button, input, select{
+    margin: 10px;
+    padding: 10px;
+}
+
+#container{
+    display: flex;
+    margin-top: 30px;
+}
+
+img{
+    width: 80px;
+    height: 80px;
+}
