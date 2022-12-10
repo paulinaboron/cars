@@ -14,6 +14,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static spark.Spark.*;
 
@@ -72,8 +74,7 @@ public class App {
         post("/generate", App::generate);
         post("/invoice", App::invoice);
         get("/getInvoice", App::getInvoice);
-        post("/allCarsInvoice", App::allCarsInvoice);
-
+        post("/manyCarsInvoice", App::manyCarsInvoice);
     }
 
     static String add(Request req, Response res){
@@ -199,8 +200,29 @@ public class App {
         return null;
     }
 
-    static String allCarsInvoice(Request req, Response res){
-        Invoice inv = new Invoice("sprzedawca", "kupujący", cars);
+    static String manyCarsInvoice(Request req, Response res) throws DocumentException, FileNotFoundException {
+        Gson gson = new Gson();
+        int year = gson.fromJson(req.body(), InvoiceData.class).getYear();
+        int low = gson.fromJson(req.body(), InvoiceData.class).getLow();
+        int high = gson.fromJson(req.body(), InvoiceData.class).getHigh();
+        System.out.println(year + " " + low + " " + high);
+
+        if (year == 0 && low == 0 && high == 0){
+            Invoice inv = new Invoice("sprzedawca", "kupujący", cars);
+            inv.generatePdf("Faktura za wszystkie auta");
+        }else if(year != 0 && low == 0 && high == 0){
+            Stream<Car> result = cars.stream().filter(s->s.year == year);
+
+            Invoice inv = new Invoice("sprzedawca", "kupujący", result.collect(Collectors.toCollection(ArrayList::new)));
+            inv.generatePdf("Faktura za auta z roku " + year);
+        }else{
+            Stream<Car> result = cars.stream().filter(s->s.price <= high);
+            Stream<Car> result2 = result.filter(s->s.price >= low);
+
+            Invoice inv = new Invoice("sprzedawca", "kupujący", result2.collect(Collectors.toCollection(ArrayList::new)));
+            inv.generatePdf("Faktura za auta w cenach " + low + "-" + high + " PLN");
+        }
+
         return null;
     }
 
@@ -339,6 +361,27 @@ class IdToDelete{
 
     public int getId() {
         return id;
+    }
+}
+
+class InvoiceData{
+    int year;
+    int low;
+    int high;
+
+    public InvoiceData() {
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public int getLow() {
+        return low;
+    }
+
+    public int getHigh() {
+        return high;
     }
 }
 

@@ -16,8 +16,8 @@
         <div id="nav">
             <button id="random">Generuj bazę samochodów</button>
 
-            <button>faktura za wszystkie auta</button>
-            <select>
+            <button id="allCarsInvoice">faktura za wszystkie auta</button>
+            <select id="yearSelect">
                 <option>2000</option>
                 <option>2001</option>
                 <option>2002</option>
@@ -28,12 +28,12 @@
                 <option>2007</option>
             </select>
 
-            <button>faktura z rocznika</button>
+            <button id="yearInvoice">faktura z rocznika</button>
 
-            <input type="number" name="lowest">
-            <input type="number" name="highest">
+            <input type="number" name="lowest" id="inputLow">
+            <input type="number" name="highest" id="inputHigh">
 
-            <button>faktura z zakresu cen</button>
+            <button id="priceInvoice">faktura z zakresu cen</button>
         </div>
         <table id="tb"></table>
     </div>
@@ -123,6 +123,39 @@
                 return response;
             }
             // response.json
+        }
+
+        document.getElementById("allCarsInvoice").onclick = async()=>{
+            let d = await generateInv(0, 0, 0)
+            await load();
+        }
+
+        document.getElementById("yearInvoice").onclick = async()=>{
+            let year = document.getElementById("yearSelect").value
+            let d = await generateInv(year, 0, 0)
+            await load();
+        }
+
+        document.getElementById("priceInvoice").onclick = async()=>{
+            let low = document.getElementById("inputLow").value
+            let high = document.getElementById("inputHigh").value
+            let d = await generateInv(0, low, high)
+            await load();
+        }
+
+        generateInv = async (year, low, high) =>{
+            const options = {
+                method: "POST",
+                body: JSON.stringify({year: year, low: low, high: high})
+            };
+
+            let response = await fetch("/manyCarsInvoice", options)
+            console.log(response)
+
+            if (!response.ok)
+                return response.status
+            else
+                return response; // response.json
         }
 
         load()
