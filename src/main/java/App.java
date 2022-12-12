@@ -5,11 +5,11 @@ import com.itextpdf.text.pdf.PdfWriter;
 import spark.Request;
 import spark.Response;
 
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import javax.servlet.http.Part;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -75,6 +75,8 @@ public class App {
         post("/invoice", App::invoice);
         get("/getInvoice", App::getInvoice);
         post("/manyCarsInvoice", App::manyCarsInvoice);
+        post("/upload", App::upload);
+        get("/thumb", App::getThumb);
     }
 
     static String add(Request req, Response res){
@@ -224,6 +226,42 @@ public class App {
         }
 
         return null;
+    }
+
+    static String upload(Request req, Response res) throws ServletException, IOException {
+        req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/images"));
+        System.out.println("plików jest: "+req.raw().getParts().size());
+        System.out.println("parts "+req.raw().getParts());
+
+        ArrayList<String> fileNames = new ArrayList<>();
+
+        for(Part p : req.raw().getParts()){
+            System.out.println(p.getSubmittedFileName());
+            System.out.println(p.getInputStream());
+            InputStream inputStream = p.getInputStream();
+            // inputstream to byte
+            byte[] bytes = inputStream.readAllBytes();
+            String fileName = p.getSubmittedFileName();
+            FileOutputStream fos = new FileOutputStream("images/" + fileName);
+            fos.write(bytes);
+            fos.close();
+            // dodaj do Arraylist z nazwami aut do odesłania do przeglądarki
+            fileNames.add(fileName);
+        }
+        String json = new Gson().toJson(fileNames);
+        return json;
+    }
+
+    static String getThumb(Request req, Response res) throws IOException {
+        String fileName = req.queryParams("id");
+        res.type("image/jpeg");
+
+        OutputStream outputStream = res.raw().getOutputStream();
+
+        outputStream.write(Files.readAllBytes(Path.of("images/" + fileName)));
+        outputStream.flush();
+
+        return outputStream.toString();
     }
 
 }

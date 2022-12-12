@@ -44,7 +44,6 @@
             let tr = document.createElement("tr")
 
             document.getElementById("tb").appendChild(tr)
-            console.log(row)
 
             let lp = document.createElement("td")
             lp.innerText = row.id
@@ -95,6 +94,20 @@
                 document.getElementById("update").style.visibility = "visible"
                 rowToUpdate = row.id
             }
+
+            let uploadLink = document.createElement("a")
+            uploadLink.innerText = "uploader"
+            uploadLink.href = "upload.html?uuid=" + row.uuid
+            let upl = document.createElement("td")
+            tr.appendChild(upl)
+            upl.append(uploadLink)
+
+            let galleryLink = document.createElement("a")
+            galleryLink.innerText = "gallery"
+            galleryLink.href = "gallery.html?uuid=" + row.uuid
+            let gal = document.createElement("td")
+            tr.appendChild(gal)
+            gal.append(galleryLink)
         })
 
     }

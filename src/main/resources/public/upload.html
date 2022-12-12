@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="nav">
+    <a href="index.html">index</a>
+    <a href="cars.html">update/delete</a>
+    <a href="admin.html">admin</a>
+    <a href="search.html">search</a>
+</div>
+<div>
+    <button id="saveBtn">Save</button>
+    <div id="div">
+    </div>
+</div>
+
+
+<script>
+
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const uuid = urlParams.get('uuid')
+    console.log(uuid);
+
+    const div = document.getElementById("div")
+
+    document.querySelector("html").ondragover = function (e) {
+        e.preventDefault(); // usuwa domyślne zachowanie strony po wykonaniu zdarzenia, warto zakomentować i sprawdzić
+        e.stopPropagation(); // zatrzymuje dalszą propagację zdarzenia, warto zakomentować i sprawdzić
+    }
+
+    document.querySelector("html").ondrop = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    div.ondragenter = function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+    }
+
+    div.ondragover = function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+    }
+
+    div.ondragleave = function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+
+    }
+
+    div.ondrop = function (e) {
+
+        console.log("drop na divie")
+        e.stopPropagation();
+        e.preventDefault();
+
+        const files = e.dataTransfer.files;
+        console.log(files)
+
+        const fd = new FormData();
+
+        console.log(files.length)
+        for (let i = 0; i < files.length; i++) {
+            fd.append('file', files[i]);
+        }
+
+        console.log(fd)
+
+        const body = fd
+
+        fetch("/upload", { method: "post", body })
+            .then(response => response.json())
+            .then(data => {
+                for(let i=0; i<data.length; i++){
+                    let img = document.createElement("img")
+                    img.src = "thumb?id=" + data[i]
+                    div.append(img)
+                }
+            })
+            .catch(error => console.log(error)) // ew błąd
+
+    }
+
+
+    document.getElementById("saveBtn").onclick = function(){
+        console.log("save")
+    }
+
+</script>
+</body>
+</html>

@@ -1,16 +1,83 @@
 *{
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Calibri";
+}
+
+body{
+    background-color: #f1f5fd;
+}
+
+.nav{
+    width: 100%;
+    padding: 20px 50px;
+    display: flex;
+    justify-content: flex-start;
+    background-color: white;
+    margin-bottom: 50px;
+}
+
+.nav a{
+    text-decoration: none;
+    color: #9ea0b2;
+    margin-right: 30px;
 }
 
 #index{
     margin: 5px;
 }
 
+table{
+    border: none;
+    border-collapse: collapse;
+    margin: auto;
+}
+
 td{
-    border: 1px solid black;
-    padding: 0 15px;
     min-width: 80px;
     text-align: center;
+    color: #9ea0b2;
+    background-color: white;
+    border-bottom: 1px solid #f1f5fd;
+    padding: 0 40px;
+}
+
+.cars td{
+    padding: 0 30px;
+}
+
+td button{
+    background-color: #785dcd;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 9999999px;
+}
+
+#random{
+    font-size: 18px;
+    background-color: #785dcd;
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 9999999px;
+    margin: 0 0 30px 120px;
+}
+
+#randomSearch{
+    font-size: 18px;
+    background-color: #785dcd;
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 9999999px;
+}
+
+td a{
+    text-decoration: none;
+    color: #9ea0b2;
+    font-weight: bold;
 }
 
 #update{
@@ -37,26 +104,33 @@ td{
     float: right;
 }
 
-#nav{
+#navInvoices{
     width: 200px;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    margin: 10px;
-    padding: 10px;
+    margin-left: 50px;
 }
 
-#nav button, input, select{
-    margin: 10px;
+
+
+#navInvoices button, input, select{
+    margin-bottom: 20px;
     padding: 10px;
+
 }
 
 #container{
     display: flex;
-    margin-top: 30px;
 }
 
 img{
     width: 80px;
     height: 80px;
+}
+
+#div{
+    width: 300px;
+    height: 200px;
+    border: 3px dotted black;
 }

@@ -7,14 +7,12 @@
 </head>
 <body>
 
-    <div>
+    <div class="nav">
         <a href="index.html">index</a>
         <a href="admin.html">admin</a>
-        <a href="search.html">Search</a>
-
-        <table id="tb"></table>
+        <a href="search.html">search</a>
     </div>
-
+    <table id="tb" class="cars"></table>
     <div id="update">
         <input type="text" name="model" id="model">
 
@@ -44,7 +42,6 @@
             let tr = document.createElement("tr")
 
             document.getElementById("tb").appendChild(tr)
-            console.log(row)
 
             let lp = document.createElement("td")
             lp.innerText = row.id
@@ -76,7 +73,7 @@
             tr.appendChild(dlt)
 
             let dltButton = document.createElement("button")
-            dltButton.innerText = "Delete Car"
+            dltButton.innerText = "Delete"
             dlt.appendChild(dltButton)
 
             dltButton.onclick = async()=>{
@@ -88,13 +85,27 @@
             tr.appendChild(upd)
 
             let updButton = document.createElement("button")
-            updButton.innerText = "Update Car"
+            updButton.innerText = "Update"
             upd.appendChild(updButton)
 
             updButton.onclick = function(){
                 document.getElementById("update").style.visibility = "visible"
                 rowToUpdate = row.id
             }
+
+            let uploadLink = document.createElement("a")
+            uploadLink.innerText = "uploader"
+            uploadLink.href = "upload.html?uuid=" + row.uuid
+            let upl = document.createElement("td")
+            tr.appendChild(upl)
+            upl.append(uploadLink)
+
+            let galleryLink = document.createElement("a")
+            galleryLink.innerText = "gallery"
+            galleryLink.href = "gallery.html?uuid=" + row.uuid
+            let gal = document.createElement("td")
+            tr.appendChild(gal)
+            gal.append(galleryLink)
         })
 
     }
