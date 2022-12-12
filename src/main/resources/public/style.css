@@ -25,7 +25,26 @@ body{
 }
 
 #index{
-    margin: 5px;
+    width: 30%;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    justify-content: center;
+    align-items: center;
+    padding: 50px 0;
+    border-radius: 50px;
+}
+
+#index *{
+    width: 50%;
+    margin: 10px 0;
+    padding: 10px 0;
+}
+
+#index div{
+    margin: 0 0;
+    padding: 0;
 }
 
 table{
@@ -56,16 +75,10 @@ td button{
 }
 
 #random{
-    font-size: 18px;
-    background-color: #785dcd;
-    color: white;
-    border: none;
-    padding: 15px 25px;
-    border-radius: 9999999px;
     margin: 0 0 30px 120px;
 }
 
-#randomSearch{
+.mainButton{
     font-size: 18px;
     background-color: #785dcd;
     color: white;
@@ -114,15 +127,25 @@ td a{
 
 
 
-#navInvoices button, input, select{
+#navInvoices button, #navInvoices input, #navInvoices select{
     margin-bottom: 20px;
     padding: 10px;
-
 }
 
 #container{
     display: flex;
 }
+
+#mainUpload{
+    display: flex;
+    flex-direction: column-reverse;
+    width: 50%;
+    margin: auto;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+
 
 img{
     width: 80px;
@@ -130,7 +153,9 @@ img{
 }
 
 #div{
-    width: 300px;
-    height: 200px;
-    border: 3px dotted black;
+    width: 100%;
+    height: 400px;
+    border: 4px dotted black;
+    border-radius: 50px;
+    margin-bottom: 30px;
 }
