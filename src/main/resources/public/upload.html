@@ -90,6 +90,15 @@
 
     document.getElementById("saveBtn").onclick = function(){
         console.log("save")
+
+        const body = JSON.stringify({"uuid": uuid})
+
+        fetch("/savePhotos", { method: "post", body })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+            })
+            .catch(error => console.log(error))
     }
 
 </script>

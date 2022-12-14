@@ -7,14 +7,16 @@
 </head>
 <body>
 
-    <div>
+    <div class="nav">
         <a href="index.html">index</a>
-        <a href="admin.html">admin</a>
         <a href="cars.html">update/delete</a>
+        <a href="admin.html">admin</a>
+        <a href="search.html">search</a>
     </div>
     <div id="container">
-        <div id="nav">
-            <button id="random">Generuj bazę samochodów</button>
+
+        <div id="navInvoices">
+            <button id="randomSearch" class="mainButton">Generuj bazę samochodów</button>
 
             <button id="allCarsInvoice">faktura za wszystkie auta</button>
             <select id="yearSelect">
@@ -108,7 +110,7 @@
                 return await response.json() // response.json
         }
 
-        document.getElementById("random").onclick = async()=>{
+        document.getElementById("randomSearch").onclick = async()=>{
             const options = {
                 method: "POST",
                 body: JSON.stringify({x:1})

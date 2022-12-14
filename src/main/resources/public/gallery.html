@@ -12,5 +12,33 @@
     <a href="admin.html">admin</a>
     <a href="search.html">search</a>
 </div>
+
+<div id="photosContainer">
+
+</div>
+
+<script>
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const uuid = urlParams.get('uuid')
+
+    let div = document.getElementById("photosContainer")
+
+    const body = JSON.stringify({"uuid": uuid})
+
+    fetch("/getPhotos", { method: "post", body })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            for(let i=0; i<data.length; i++){
+                let img = document.createElement("img")
+                img.src = "thumb?id=" + data[i]
+                div.append(img)
+            }
+
+        })
+        .catch(error => console.log(error))
+
+</script>
 </body>
 </html>

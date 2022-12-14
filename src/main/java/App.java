@@ -55,6 +55,8 @@ public class App {
         }
     };
 
+    public static ArrayList<String> photosList = new ArrayList<>();
+
 
     public static HashMap<String, String> modelsMap = new HashMap<>() {{
         put("Toyota", "src/main/resources/public/imgs/toyota.png");
@@ -77,6 +79,8 @@ public class App {
         post("/manyCarsInvoice", App::manyCarsInvoice);
         post("/upload", App::upload);
         get("/thumb", App::getThumb);
+        post("/savePhotos", App::savePhotos);
+        post("/getPhotos", App::getPhotos);
     }
 
     static String add(Request req, Response res){
@@ -245,11 +249,10 @@ public class App {
             FileOutputStream fos = new FileOutputStream("images/" + fileName);
             fos.write(bytes);
             fos.close();
-            // dodaj do Arraylist z nazwami aut do odesłania do przeglądarki
             fileNames.add(fileName);
+            photosList.add(fileName);
         }
-        String json = new Gson().toJson(fileNames);
-        return json;
+        return new Gson().toJson(fileNames);
     }
 
     static String getThumb(Request req, Response res) throws IOException {
@@ -262,6 +265,34 @@ public class App {
         outputStream.flush();
 
         return outputStream.toString();
+    }
+
+    static String savePhotos(Request req, Response res){
+        Gson gson = new Gson();
+        UUID uuid = gson.fromJson(req.body(), SelectedId.class).getId();
+        System.out.println(uuid);
+
+        for(Car c : cars){
+            if(c.uuid.equals(uuid)){
+                c.photos.addAll(photosList);
+                break;
+            }
+        }
+
+        photosList.clear();
+        return "ok";
+    }
+
+    static String getPhotos(Request req, Response res){
+        Gson gson = new Gson();
+        UUID uuid = gson.fromJson(req.body(), SelectedId.class).getId();
+
+        for(Car c : cars){
+            if(c.uuid.equals(uuid)){
+                return new Gson().toJson(c.photos);
+            }
+        }
+        return "ok";
     }
 
 }
@@ -280,113 +311,6 @@ class Airbag {
         return "Airbag{" +
                 "desc='" + desc + '\'' +
                 ", value=" + value +
-                '}';
-    }
-}
-
-class Car{
-    int id;
-    UUID uuid;
-    String model;
-    int year;
-    String color;
-    ArrayList<Airbag> airbags;
-    boolean invoice;
-    int price;
-    int vat;
-    CustomDate date;
-    String img;
-
-    public Car() {
-        if (App.cars.isEmpty()) {
-            this.id = 1;
-        }else{
-            this.id = App.cars.get(App.cars.size()-1).id + 1;
-        }
-        this.uuid = Generators.randomBasedGenerator().generate();
-        this.invoice = false;
-    }
-
-    public Car( String model, int year, String color, ArrayList<Airbag> airbags) {
-        if (App.cars.isEmpty()) {
-            this.id = 1;
-        }else{
-            this.id = App.cars.get(App.cars.size()-1).id + 1;
-        }
-        this.uuid = Generators.randomBasedGenerator().generate();
-        this.model = model;
-        this.year = year;
-        this.color = color;
-        this.airbags = airbags;
-        this.invoice = false;
-        this.price = ThreadLocalRandom.current().nextInt(10000, 50000 + 1);
-        this.vat = App.vatList.get(ThreadLocalRandom.current().nextInt(0, 3));
-        this.date = new CustomDate();
-
-        if(App.models.contains(this.model)){
-            img = App.modelsMap.get(this.model).substring(25);
-        }else{
-            img = "/imgs/car.png";
-        }
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public int getYear() {
-        return year;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public ArrayList<Airbag> getAirbags() {
-        return airbags;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public int getVat() {
-        return vat;
-    }
-
-    public CustomDate getDate() {
-        return date;
-    }
-
-    public void setInvoice(boolean invoice) {
-        this.invoice = invoice;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public void setYear(int year) {
-        this.year = year;
-    }
-
-    @Override
-    public String toString() {
-        return "Car{" +
-                "id=" + id +
-                ", uuid=" + uuid +
-                ", model='" + model + '\'' +
-                ", year=" + year +
-                ", color='" + color + '\'' +
-                ", airbags=" + airbags +
                 '}';
     }
 }
@@ -447,5 +371,12 @@ class UpdatedData{
                 ", model='" + model + '\'' +
                 ", year=" + year +
                 '}';
+    }
+}
+
+class SelectedId{
+     UUID uuid;
+    public UUID getId() {
+        return uuid;
     }
 }

@@ -6,6 +6,31 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-gallery
+<div class="nav">
+    <a href="index.html">index</a>
+    <a href="cars.html">update/delete</a>
+    <a href="admin.html">admin</a>
+    <a href="search.html">search</a>
+</div>
+
+<div id="photosContainer">
+
+</div>
+
+<script>
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const uuid = urlParams.get('uuid')
+
+    const body = JSON.stringify({"uuid": uuid})
+
+    fetch("/getPhotos", { method: "post", body })
+        .then(response => response.text())
+        .then(data => {
+            console.log(data)
+        })
+        .catch(error => console.log(error))
+
+</script>
 </body>
 </html>

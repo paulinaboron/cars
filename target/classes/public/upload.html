@@ -6,15 +6,15 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div>
+<div class="nav">
     <a href="index.html">index</a>
+    <a href="cars.html">update/delete</a>
     <a href="admin.html">admin</a>
-    <a href="search.html">Search</a>
+    <a href="search.html">search</a>
 </div>
-<div>
-    <button id="saveBtn">Save</button>
+<div id="mainUpload">
+    <div><button id="saveBtn" class="mainButton">Save</button></div>
     <div id="div">
-        <img src='thumb?id=angel bites.jpg'/>
     </div>
 </div>
 
@@ -38,23 +38,23 @@
         e.stopPropagation();
     }
 
-    document.querySelector("#div").ondragenter = function (e) {
+    div.ondragenter = function (e) {
         e.stopPropagation();
         e.preventDefault();
     }
 
-    document.querySelector("#div").ondragover = function (e) {
+    div.ondragover = function (e) {
         e.stopPropagation();
         e.preventDefault();
     }
 
-    document.querySelector("#div").ondragleave = function (e) {
+    div.ondragleave = function (e) {
         e.stopPropagation();
         e.preventDefault();
 
     }
 
-    document.querySelector("#div").ondrop = function (e) {
+    div.ondrop = function (e) {
 
         console.log("drop na divie")
         e.stopPropagation();
@@ -75,14 +75,13 @@
         const body = fd
 
         fetch("/upload", { method: "post", body })
-            .then(response => response.text())
+            .then(response => response.json())
             .then(data => {
-                alert(data)
-                data.foreach((e) =>{
+                for(let i=0; i<data.length; i++){
                     let img = document.createElement("img")
-                    img.src = "thumb?id=" + e
+                    img.src = "thumb?id=" + data[i]
                     div.append(img)
-                })
+                }
             })
             .catch(error => console.log(error)) // ew błąd
 
@@ -91,6 +90,15 @@
 
     document.getElementById("saveBtn").onclick = function(){
         console.log("save")
+
+        const body = JSON.stringify({"uuid": uuid})
+
+        fetch("/savePhotos", { method: "post", body })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+            })
+            .catch(error => console.log(error))
     }
 
 </script>
