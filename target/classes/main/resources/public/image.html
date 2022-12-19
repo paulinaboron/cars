@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="nav">
+    <a href="index.html">index</a>
+    <a href="cars.html">update/delete</a>
+    <a href="admin.html">admin</a>
+    <a href="search.html">search</a>
+</div>
+<div id="photoEdit">
+    <button class="mainButton">Crop</button>
+    <button class="mainButton" id="rotate">Rotate</button>
+    <button class="mainButton">Flip vertical</button>
+    <button class="mainButton">Flip horizontal</button>
+</div>
+<div id="photoContainer">
+
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const imageName = urlParams.get('id')
+
+    let img = document.createElement("img")
+    img.src = "image?id=" + imageName
+
+    document.getElementById("photoContainer").appendChild(img)
+
+    document.getElementById("rotate").onclick = function (){
+        const body = JSON.stringify({"imageName": imageName})
+
+        fetch("/rotate", { method: "post", body })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+            })
+            .catch(error => console.log(error)) // ew błąd
+    }
+
+</script>
+
+</body>
+</html>

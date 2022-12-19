@@ -31,9 +31,17 @@
         .then(data => {
             console.log(data)
             for(let i=0; i<data.length; i++){
+                let wrapper = document.createElement("div")
                 let img = document.createElement("img")
                 img.src = "thumb?id=" + data[i]
-                div.append(img)
+                div.append(wrapper)
+                wrapper.appendChild(img)
+
+                let btn = document.createElement("a")
+                wrapper.appendChild(btn)
+                btn.innerText = "Edit"
+                btn.href = "image.html?id=" + data[i]
+
             }
 
         })

@@ -147,7 +147,7 @@ td a{
 
 
 
-img{
+td img{
     width: 80px;
     height: 80px;
 }
@@ -158,4 +158,8 @@ img{
     border: 4px dotted black;
     border-radius: 50px;
     margin-bottom: 30px;
+}
+
+#photoContainer img{
+    width: 600px;
 }

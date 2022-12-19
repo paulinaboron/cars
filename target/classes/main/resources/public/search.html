@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="nav">
+        <a href="index.html">index</a>
+        <a href="cars.html">update/delete</a>
+        <a href="admin.html">admin</a>
+        <a href="search.html">search</a>
+    </div>
+    <div id="container">
+
+        <div id="navInvoices">
+            <button id="randomSearch" class="mainButton">Generuj bazę samochodów</button>
+
+            <button id="allCarsInvoice">faktura za wszystkie auta</button>
+            <select id="yearSelect">
+                <option>2000</option>
+                <option>2001</option>
+                <option>2002</option>
+                <option>2003</option>
+                <option>2004</option>
+                <option>2005</option>
+                <option>2006</option>
+                <option>2007</option>
+            </select>
+
+            <button id="yearInvoice">faktura z rocznika</button>
+
+            <input type="number" name="lowest" id="inputLow">
+            <input type="number" name="highest" id="inputHigh">
+
+            <button id="priceInvoice">faktura z zakresu cen</button>
+        </div>
+        <table id="tb"></table>
+    </div>
+
+
+    <script>
+        load = async()=>{
+            let dane = await fetchPostAsync()
+            console.log(dane)
+
+            document.getElementById("tb").innerHTML = ""
+            dane.forEach(row =>{
+                let tr = document.createElement("tr")
+
+                document.getElementById("tb").appendChild(tr)
+                console.log(row)
+
+                let lp = document.createElement("td")
+                lp.innerText = row.id
+                tr.appendChild(lp)
+
+                let model = document.createElement("td")
+                model.innerText = row.model
+                tr.appendChild(model)
+
+                let year = document.createElement("td")
+                year.innerText = row.year
+                tr.appendChild(year)
+
+                let airbags = document.createElement("td")
+                row.airbags.forEach(e =>
+                    airbags.innerHTML += `${e.desc}: ${e.value}<br>`
+                )
+                tr.appendChild(airbags)
+
+                let color = document.createElement("td")
+                color.style.backgroundColor = row.color
+                tr.appendChild(color)
+
+                let car = document.createElement("td")
+                tr.appendChild(car)
+                let img = document.createElement("img")
+                img.src = row.img
+                car.appendChild(img)
+
+                let date = document.createElement("td")
+                date.innerText = row.date.day + "/" + row.date.month + "/" + row.date.year;
+                tr.appendChild(date)
+
+                let price = document.createElement("td")
+                price.innerText = row.price
+                tr.appendChild(price)
+
+                let vat = document.createElement("td")
+                vat.innerText = row.vat
+                tr.appendChild(vat)
+
+
+            })
+        }
+        fetchPostAsync = async () => {
+
+            const options = {
+                method: "GET",
+            };
+
+            let response = await fetch("/json", options)
+
+            if (!response.ok)
+                return response.status
+            else
+                return await response.json() // response.json
+        }
+
+        document.getElementById("randomSearch").onclick = async()=>{
+            const options = {
+                method: "POST",
+                body: JSON.stringify({x:1})
+            };
+
+            let response = await fetch("/generate", options)
+
+            if (!response.ok)
+                return response.status
+            else{
+                await load()
+                return response;
+            }
+            // response.json
+        }
+
+        document.getElementById("allCarsInvoice").onclick = async()=>{
+            let d = await generateInv(0, 0, 0)
+            await load();
+        }
+
+        document.getElementById("yearInvoice").onclick = async()=>{
+            let year = document.getElementById("yearSelect").value
+            let d = await generateInv(year, 0, 0)
+            await load();
+        }
+
+        document.getElementById("priceInvoice").onclick = async()=>{
+            let low = document.getElementById("inputLow").value
+            let high = document.getElementById("inputHigh").value
+            let d = await generateInv(0, low, high)
+            await load();
+        }
+
+        generateInv = async (year, low, high) =>{
+            const options = {
+                method: "POST",
+                body: JSON.stringify({year: year, low: low, high: high})
+            };
+
+            let response = await fetch("/manyCarsInvoice", options)
+            console.log(response)
+
+            if (!response.ok)
+                return response.status
+            else
+                return response; // response.json
+        }
+
+        load()
+    </script>
+
+</body>
+</html>

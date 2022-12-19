@@ -2,14 +2,18 @@ import com.fasterxml.uuid.Generators;
 import com.google.gson.Gson;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
+import org.imgscalr.Scalr;
 import spark.Request;
 import spark.Response;
 
+import javax.imageio.ImageIO;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -67,8 +71,8 @@ public class App {
     }};
 
     public static void main(String[] args) {
-//        externalStaticFileLocation("C:\\Users\\4pa\\Desktop\\java\\sparkProject\\src\\main\\resources\\public");
-        externalStaticFileLocation("C:\\Users\\pauli\\sparkProject\\src\\main\\resources\\public");
+        externalStaticFileLocation("C:\\Users\\4pa\\sparkProject\\src\\main\\resources\\public");
+//        externalStaticFileLocation("C:\\Users\\pauli\\sparkProject\\src\\main\\resources\\public");
         post("/add", App::add);
         get("/json", App::getJson);
         post("/delete", App::delete);
@@ -81,6 +85,8 @@ public class App {
         get("/thumb", App::getThumb);
         post("/savePhotos", App::savePhotos);
         post("/getPhotos", App::getPhotos);
+        get("/image", App::getImage);
+        post("/rotate", App::rotate);
     }
 
     static String add(Request req, Response res){
@@ -295,6 +301,41 @@ public class App {
         return "ok";
     }
 
+    static String getImage(Request req, Response res) throws IOException {
+        String fileName = req.queryParams("id");
+        res.type("image/jpeg");
+
+        OutputStream outputStream = res.raw().getOutputStream();
+
+        outputStream.write(Files.readAllBytes(Path.of("images/" + fileName)));
+        outputStream.flush();
+
+        return outputStream.toString();
+    }
+
+    static String rotate(Request req, Response res) throws IOException {
+        System.out.println(req.body());
+        Gson gson = new Gson();
+        String fileName = gson.fromJson(req.body(), SelectedImage.class).getImageName();
+        res.type("image/jpeg");
+        System.out.println(fileName);
+
+        File sourceFile = new File("images/" + fileName);
+        BufferedImage originalImage = ImageIO.read(sourceFile);
+
+        originalImage = Scalr.rotate(originalImage, Scalr.Rotation.CW_90);
+
+        System.out.println(originalImage.getWidth());
+        System.out.println(originalImage.getHeight());
+
+        File targetFile = new File("images/" + fileName);
+        ImageIO.write(originalImage, "jpg", targetFile);
+
+        originalImage.flush();
+        return originalImage.toString();
+//        return "ok";
+    }
+
 }
 
 class Airbag {
@@ -378,5 +419,13 @@ class SelectedId{
      UUID uuid;
     public UUID getId() {
         return uuid;
+    }
+}
+
+class SelectedImage{
+    String imageName;
+
+    public String getImageName() {
+        return imageName;
     }
 }

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+    <div class="nav">
+        <a href="index.html">index</a>
+        <a href="cars.html">update/delete</a>
+        <a href="admin.html">admin</a>
+        <a href="search.html">search</a>
+    </div>
+
+    <div id="index">
+        <input type="text" name="model" id="model">
+
+        <select name="rok" id="rok">
+            <option value="2001">2001</option>
+            <option value="2002">2002</option>
+            <option value="2003">2003</option>
+            <option value="2004">2004</option>
+        </select>
+
+            <div><input type="checkbox" id="kierowca">Kierowca</div>
+            <div><input type="checkbox" id="pasazer">Pasażer</div>
+            <div><input type="checkbox" id="boczne">Boczne</div>
+            <div><input type="checkbox" id="kanapa">Kanapa</div>
+
+        <input type="color" name="kolor" id="color">
+        <button id="btnAdd" class="mainButton">Dodaj</button>
+
+    </div>
+
+    <script>
+        document.getElementById("btnAdd").onclick = async () => {
+            let json = await fetchPostAsync()
+            console.log(json)
+            alert(JSON.stringify(json, null, 5))
+        }
+
+        fetchPostAsync = async () => {
+
+            const data = JSON.stringify({
+                model: document.getElementById("model").value,
+                year: document.getElementById("rok").value,
+                color: document.getElementById("color").value,
+                airbags: [
+                    {
+                        desc: "kierowca",
+                        value: document.getElementById("kierowca").checked
+                    },
+                    {
+                        desc: "pasazer",
+                        value: document.getElementById("pasazer").checked
+                    },
+                    {
+                        desc: "kanapa",
+                        value: document.getElementById("kanapa").checked
+                    },
+                    {
+                        desc: "boczne",
+                        value: document.getElementById("boczne").checked
+                    },
+                ]
+            })
+
+            const options = {
+                method: "POST",
+                body: data,
+            };
+
+            let response = await fetch("/add", options)
+
+            if (!response.ok)
+                return response.status
+            else
+                return await response.json() // response.json
+
+        }
+    </script>
+
+</body>
+</html>

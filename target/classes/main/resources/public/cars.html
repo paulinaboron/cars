@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cars</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="nav">
+        <a href="index.html">index</a>
+        <a href="cars.html">update/delete</a>
+        <a href="admin.html">admin</a>
+        <a href="search.html">search</a>
+    </div>
+    <table id="tb" class="cars"></table>
+    <div id="update">
+        <input type="text" name="model" id="model">
+
+        <select name="rok" id="rok">
+            <option value="2001">2001</option>
+            <option value="2002">2002</option>
+            <option value="2003">2003</option>
+            <option value="2004">2004</option>
+        </select>
+
+        <div>
+            <button id="updateBtn">update</button>
+            <button id="cancelBtn">cancel</button>
+        </div>
+
+    </div>
+
+<script>
+    let rowToUpdate = 0
+
+    load = async()=>{
+        let dane = await fetchPostAsync()
+        console.log(dane)
+
+        document.getElementById("tb").innerHTML = ""
+        dane.forEach(row =>{
+            let tr = document.createElement("tr")
+
+            document.getElementById("tb").appendChild(tr)
+
+            let lp = document.createElement("td")
+            lp.innerText = row.id
+            tr.appendChild(lp)
+
+            let uuid = document.createElement("td")
+            uuid.innerText = row.uuid
+            tr.appendChild(uuid)
+
+            let model = document.createElement("td")
+            model.innerText = row.model
+            tr.appendChild(model)
+
+            let year = document.createElement("td")
+            year.innerText = row.year
+            tr.appendChild(year)
+
+            let airbags = document.createElement("td")
+            row.airbags.forEach(e =>
+                airbags.innerHTML += `${e.desc}: ${e.value}<br>`
+            )
+            tr.appendChild(airbags)
+
+            let color = document.createElement("td")
+            color.style.backgroundColor = row.color
+            tr.appendChild(color)
+
+            let dlt = document.createElement("td")
+            tr.appendChild(dlt)
+
+            let dltButton = document.createElement("button")
+            dltButton.innerText = "Delete"
+            dlt.appendChild(dltButton)
+
+            dltButton.onclick = async()=>{
+                let d = await deleteCar(row.id)
+                load()
+            }
+
+            let upd = document.createElement("td")
+            tr.appendChild(upd)
+
+            let updButton = document.createElement("button")
+            updButton.innerText = "Update"
+            upd.appendChild(updButton)
+
+            updButton.onclick = function(){
+                document.getElementById("update").style.visibility = "visible"
+                rowToUpdate = row.id
+            }
+
+            let uploadLink = document.createElement("a")
+            uploadLink.innerText = "uploader"
+            uploadLink.href = "upload.html?uuid=" + row.uuid
+            let upl = document.createElement("td")
+            tr.appendChild(upl)
+            upl.append(uploadLink)
+
+            let galleryLink = document.createElement("a")
+            galleryLink.innerText = "gallery"
+            galleryLink.href = "gallery.html?uuid=" + row.uuid
+            let gal = document.createElement("td")
+            tr.appendChild(gal)
+            gal.append(galleryLink)
+        })
+
+    }
+
+    fetchPostAsync = async () => {
+
+        const options = {
+            method: "GET",
+        };
+
+        let response = await fetch("/json", options)
+
+        if (!response.ok)
+            return response.status
+        else
+            return await response.json() // response.json
+    }
+
+    deleteCar = async (id) =>{
+        const options = {
+            method: "POST",
+            body: JSON.stringify({id: id})
+        };
+
+        let response = await fetch("/delete", options)
+
+        if (!response.ok)
+            return response.status
+        else
+            return await response.json() // response.json
+
+    }
+
+    document.getElementById("cancelBtn").onclick = function(){
+        document.getElementById("update").style.visibility = "hidden";
+    }
+
+    document.getElementById("updateBtn").onclick = async()=>{
+        let d = await updateCar(rowToUpdate)
+        document.getElementById("update").style.visibility = "hidden";
+        load()
+    }
+
+    updateCar = async (id) =>{
+
+        const data = JSON.stringify({
+                model: document.getElementById("model").value,
+                year: document.getElementById("rok").value,
+                id: id
+        })
+
+        const options = {
+            method: "POST",
+            body: data
+        };
+
+        let response = await fetch("/update", options)
+
+        if (!response.ok)
+            return response.status
+        else
+            return await response.json() // response.json
+
+    }
+
+
+
+    load()
+
+</script>
+</body>
+</html>
