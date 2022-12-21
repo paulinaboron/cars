@@ -160,6 +160,7 @@ td img{
     margin-bottom: 30px;
 }
 
-#photoContainer img{
+#photoContainer div{
     width: 600px;
+    height: 450px;
 }

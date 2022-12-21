@@ -15,7 +15,7 @@
 <div id="photoEdit">
     <button class="mainButton">Crop</button>
     <button class="mainButton" id="rotate">Rotate</button>
-    <button class="mainButton">Flip vertical</button>
+    <button class="mainButton" id="flipV">Flip vertical</button>
     <button class="mainButton">Flip horizontal</button>
 </div>
 <div id="photoContainer">
@@ -26,8 +26,8 @@
     const urlParams = new URLSearchParams(window.location.search);
     const imageName = urlParams.get('id')
 
-    let img = document.createElement("img")
-    img.src = "image?id=" + imageName
+    let img = document.createElement("div")
+    img.style.backgroundImage = `url("/image?id=${imageName}&rand=${Math.random()}")`
 
     document.getElementById("photoContainer").appendChild(img)
 
@@ -38,6 +38,21 @@
             .then(response => response.json())
             .then(data => {
                 console.log(data)
+                img.style.backgroundImage = `url("/image?id=${data[0]}&rand=${Math.random()}")`
+                img.style.width = data[1] + "px"
+                img.style.height = data[2] + "px"
+            })
+            .catch(error => console.log(error)) // ew błąd
+    }
+
+    document.getElementById("flipV").onclick = function (){
+        const body = JSON.stringify({"imageName": imageName})
+
+        fetch("/flipV", { method: "post", body })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data)
+                img.style.backgroundImage = `url("/image?id=${data}&rand=${Math.random()}")`
             })
             .catch(error => console.log(error)) // ew błąd
     }

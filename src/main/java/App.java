@@ -87,6 +87,7 @@ public class App {
         post("/getPhotos", App::getPhotos);
         get("/image", App::getImage);
         post("/rotate", App::rotate);
+        post("/flipV", App::flipVertical);
     }
 
     static String add(Request req, Response res){
@@ -317,23 +318,18 @@ public class App {
         System.out.println(req.body());
         Gson gson = new Gson();
         String fileName = gson.fromJson(req.body(), SelectedImage.class).getImageName();
-        res.type("image/jpeg");
-        System.out.println(fileName);
 
-        File sourceFile = new File("images/" + fileName);
-        BufferedImage originalImage = ImageIO.read(sourceFile);
+        Imaging img = new Imaging(fileName);
+        return img.rotate();
+    }
 
-        originalImage = Scalr.rotate(originalImage, Scalr.Rotation.CW_90);
+    static String flipVertical(Request req, Response res) throws IOException {
+        System.out.println(req.body());
+        Gson gson = new Gson();
+        String fileName = gson.fromJson(req.body(), SelectedImage.class).getImageName();
 
-        System.out.println(originalImage.getWidth());
-        System.out.println(originalImage.getHeight());
-
-        File targetFile = new File("images/" + fileName);
-        ImageIO.write(originalImage, "jpg", targetFile);
-
-        originalImage.flush();
-        return originalImage.toString();
-//        return "ok";
+        Imaging img = new Imaging(fileName);
+        return img.flipV();
     }
 
 }
