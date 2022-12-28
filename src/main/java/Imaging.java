@@ -34,7 +34,20 @@ public class Imaging {
         BufferedImage originalImage = ImageIO.read(sourceFile);
 
         BufferedImage targetImage = Scalr.rotate(originalImage, Scalr.Rotation.FLIP_HORZ);
-//BufferedImage targetImage = Scalr.rotate(originalImage, Scalr.Rotation.FLIP_VERT);
+
+        File targetFile = new File("images/" + fileName);
+        ImageIO.write(targetImage, "jpg", targetFile);
+
+        originalImage.flush();
+        targetImage.flush();
+        return fileName;
+    }
+
+    public String flipH() throws IOException {
+        File sourceFile = new File("images/" + fileName);
+        BufferedImage originalImage = ImageIO.read(sourceFile);
+
+        BufferedImage targetImage = Scalr.rotate(originalImage, Scalr.Rotation.FLIP_VERT);
 
         File targetFile = new File("images/" + fileName);
         ImageIO.write(targetImage, "jpg", targetFile);

@@ -71,8 +71,8 @@ public class App {
     }};
 
     public static void main(String[] args) {
-        externalStaticFileLocation("C:\\Users\\4pa\\sparkProject\\src\\main\\resources\\public");
-//        externalStaticFileLocation("C:\\Users\\pauli\\sparkProject\\src\\main\\resources\\public");
+//        externalStaticFileLocation("C:\\Users\\4pa\\sparkProject\\src\\main\\resources\\public");
+        externalStaticFileLocation("C:\\Users\\pauli\\sparkProject\\src\\main\\resources\\public");
         post("/add", App::add);
         get("/json", App::getJson);
         post("/delete", App::delete);
@@ -88,6 +88,7 @@ public class App {
         get("/image", App::getImage);
         post("/rotate", App::rotate);
         post("/flipV", App::flipVertical);
+        post("/flipH", App::flipHorizontal);
     }
 
     static String add(Request req, Response res){
@@ -330,6 +331,15 @@ public class App {
 
         Imaging img = new Imaging(fileName);
         return img.flipV();
+    }
+
+    static String flipHorizontal(Request req, Response res) throws IOException {
+        System.out.println(req.body());
+        Gson gson = new Gson();
+        String fileName = gson.fromJson(req.body(), SelectedImage.class).getImageName();
+
+        Imaging img = new Imaging(fileName);
+        return img.flipH();
     }
 
 }

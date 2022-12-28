@@ -12,6 +12,7 @@
     <a href="admin.html">admin</a>
     <a href="search.html">search</a>
 </div>
+<div id="main">
 <div id="photoEdit">
     <button class="mainButton">Crop</button>
     <button class="mainButton" id="rotate">Rotate</button>
@@ -21,7 +22,7 @@
 <div id="photoContainer">
 
 </div>
-
+</div>
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const imageName = urlParams.get('id')
@@ -49,6 +50,18 @@
         const body = JSON.stringify({"imageName": imageName})
 
         fetch("/flipV", { method: "post", body })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data)
+                img.style.backgroundImage = `url("/image?id=${data}&rand=${Math.random()}")`
+            })
+            .catch(error => console.log(error)) // ew błąd
+    }
+
+    document.getElementById("flipH").onclick = function (){
+        const body = JSON.stringify({"imageName": imageName})
+
+        fetch("/flipH", { method: "post", body })
             .then(response => response.text())
             .then(data => {
                 console.log(data)
