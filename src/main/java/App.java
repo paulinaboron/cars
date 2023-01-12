@@ -71,8 +71,8 @@ public class App {
     }};
 
     public static void main(String[] args) {
-//        externalStaticFileLocation("C:\\Users\\4pa\\sparkProject\\src\\main\\resources\\public");
-        externalStaticFileLocation("C:\\Users\\pauli\\sparkProject\\src\\main\\resources\\public");
+        externalStaticFileLocation("C:\\Users\\4pa\\sparkProject\\src\\main\\resources\\public");
+//        externalStaticFileLocation("C:\\Users\\pauli\\sparkProject\\src\\main\\resources\\public");
         post("/add", App::add);
         get("/json", App::getJson);
         post("/delete", App::delete);
