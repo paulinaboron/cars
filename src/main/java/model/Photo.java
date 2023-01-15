@@ -23,4 +23,11 @@ public class Photo {
         return path;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 }

@@ -3,6 +3,9 @@ package controler;
 import model.Photo;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -38,5 +41,52 @@ public class PhotoServiceImpl implements PhotoService {
         }
 
         return null;
+    }
+
+    @Override
+    public Photo getPhotoByName(String name) {
+        for (Photo photo: data.values()) {
+            if(Objects.equals(photo.getName(), name)) return photo;
+        }
+
+        return null;
+    }
+
+    @Override
+    public Boolean deletePhoto(String id) {
+        for (Photo photo: data.values()) {
+            if(Objects.equals(photo.getId(), id)){
+                data.remove(id);
+                File file = new File(photo.getPath());
+                return file.delete();
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public OutputStream getPhotoFile(String id) throws FileNotFoundException {
+
+        for (Photo photo: data.values()) {
+            if(Objects.equals(photo.getId(), id)){
+                File file = new File(photo.getPath());
+                return new FileOutputStream(file);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Boolean updateName(String id, String newName) {
+        for (Photo photo: data.values()) {
+            if(Objects.equals(photo.getId(), id)){
+                File file = new File(photo.getPath());
+                boolean success = file.renameTo(new File(newName));
+                photo.setPath(file.getPath());
+                photo.setName(newName);
+                return success;
+            }
+        }
+        return false;
     }
 }
