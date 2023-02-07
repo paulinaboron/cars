@@ -32,7 +32,7 @@ public class Invoice {
         return sum;
     }
 
-    public void generatePdf(String subtitle) throws FileNotFoundException, DocumentException {
+    public String generatePdf(String subtitle) throws FileNotFoundException, DocumentException {
         Document document = new Document(); // dokument pdf
         String path = "src/main/resources/public/pdfs/" + subtitle + time + ".pdf"; // lokalizacja zapisu
         PdfWriter.getInstance(document, new FileOutputStream(path));
@@ -85,5 +85,6 @@ public class Invoice {
         document.add(p4);
 
         document.close();
+        return subtitle + time + ".pdf";
     }
 }

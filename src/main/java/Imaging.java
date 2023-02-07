@@ -13,12 +13,19 @@ public class Imaging {
         this.fileName = fileName;
     }
 
+    public String getDimensions() throws IOException {
+        File sourceFile = new File("images/" + fileName);
+        BufferedImage originalImage = ImageIO.read(sourceFile);
+
+        String[] data = {String.valueOf(originalImage.getWidth()), String.valueOf(originalImage.getHeight())};
+        return new Gson().toJson(data);
+    }
+
     public String rotate() throws IOException {
         File sourceFile = new File("images/" + fileName);
         BufferedImage originalImage = ImageIO.read(sourceFile);
 
         BufferedImage resizedImage = Scalr.rotate(originalImage, Scalr.Rotation.CW_90);
-
 
         File targetFile = new File("images/" + fileName);
         ImageIO.write(resizedImage, "jpg", targetFile);
@@ -55,5 +62,21 @@ public class Imaging {
         originalImage.flush();
         targetImage.flush();
         return fileName;
+    }
+
+    public String crop(int x, int y, int width, int height) throws IOException {
+        File sourceFile = new File("images/" + fileName);
+        BufferedImage originalImage = ImageIO.read(sourceFile);
+
+        BufferedImage targetImage = Scalr.crop(originalImage, x, y, width, height);
+        File targetFile = new File("images/" + fileName);
+
+        ImageIO.write(targetImage, "jpg", targetFile);
+
+        originalImage.flush();
+        targetImage.flush();
+
+        String[] data = {fileName, String.valueOf(targetImage.getWidth()), String.valueOf(targetImage.getHeight())};
+        return new Gson().toJson(data);
     }
 }

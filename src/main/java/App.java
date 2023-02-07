@@ -21,6 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.deepToString;
 import static spark.Spark.*;
 
 public class App {
@@ -70,6 +71,12 @@ public class App {
         put("VW", "src/main/resources/public/imgs/vw.png");
     }};
 
+    public static ArrayList<String> allCarsInvoices = new ArrayList<>();
+    public static ArrayList<String> yearInvoices = new ArrayList<>();
+    public static ArrayList<String> priceInvoices = new ArrayList<>();
+
+    public static Gson gson = new Gson();
+
     public static void main(String[] args) {
 //        externalStaticFileLocation("C:\\Users\\4pa\\sparkProject\\src\\main\\resources\\public");
         externalStaticFileLocation("C:\\Users\\pauli\\sparkProject\\src\\main\\resources\\public");
@@ -89,11 +96,13 @@ public class App {
         post("/rotate", App::rotate);
         post("/flipV", App::flipVertical);
         post("/flipH", App::flipHorizontal);
+        post("/dimensions", App::dimensions);
+        post("/crop", App::crop);
+        get("/getLinks", App::getLinks);
     }
 
     static String add(Request req, Response res){
         System.out.println(req.body());
-        Gson gson = new Gson();
         Car car = gson.fromJson(req.body(), Car.class);
         cars.add(car);
         System.out.println("car " + car.toString());
@@ -103,7 +112,6 @@ public class App {
 
     static String delete(Request req, Response res){
         System.out.println(req.body());
-        Gson gson = new Gson();
         int id = gson.fromJson(req.body(), IdToDelete.class).getId();
         System.out.println(id);
 
@@ -114,7 +122,6 @@ public class App {
 
     static String update(Request req, Response res){
         System.out.println(req.body());
-        Gson gson = new Gson();
         UpdatedData data = gson.fromJson(req.body(), UpdatedData.class);
         System.out.println(data);
         for(Car c: cars){
@@ -130,7 +137,6 @@ public class App {
 
     static String getJson(Request req, Response res){
         res.type("application/json");
-        Gson gson = new Gson();
         return gson.toJson(cars);
     }
 
@@ -154,7 +160,6 @@ public class App {
     }
 
     static String invoice(Request req, Response res) throws IOException, DocumentException {
-        Gson gson = new Gson();
         int id = gson.fromJson(req.body(), IdToDelete.class).getId();
         System.out.println(id);
 
@@ -205,7 +210,7 @@ public class App {
     }
 
     static String getInvoice(Request req, Response res) throws IOException {
-        String fileName = "invoice" + req.queryParams("uuid") + ".pdf";
+        String fileName = req.queryParams("uuid");
         res.type("application/octet-stream"); //
         res.header("Content-Disposition", "attachment; filename=" + fileName); // nagłówek
 
@@ -215,7 +220,6 @@ public class App {
     }
 
     static String manyCarsInvoice(Request req, Response res) throws DocumentException, FileNotFoundException {
-        Gson gson = new Gson();
         int year = gson.fromJson(req.body(), InvoiceData.class).getYear();
         int low = gson.fromJson(req.body(), InvoiceData.class).getLow();
         int high = gson.fromJson(req.body(), InvoiceData.class).getHigh();
@@ -223,21 +227,37 @@ public class App {
 
         if (year == 0 && low == 0 && high == 0){
             Invoice inv = new Invoice("sprzedawca", "kupujący", cars);
-            inv.generatePdf("Faktura za wszystkie auta");
+            String pdfTitle = inv.generatePdf("FakturaZaWszystkieAuta");
+            allCarsInvoices.add(pdfTitle);
         }else if(year != 0 && low == 0 && high == 0){
             Stream<Car> result = cars.stream().filter(s->s.year == year);
 
             Invoice inv = new Invoice("sprzedawca", "kupujący", result.collect(Collectors.toCollection(ArrayList::new)));
-            inv.generatePdf("Faktura za auta z roku " + year);
+            String pdfTitle = inv.generatePdf("FakturaZaAutaZRoku" + year);
+            yearInvoices.add(pdfTitle);
         }else{
             Stream<Car> result = cars.stream().filter(s->s.price <= high);
             Stream<Car> result2 = result.filter(s->s.price >= low);
 
             Invoice inv = new Invoice("sprzedawca", "kupujący", result2.collect(Collectors.toCollection(ArrayList::new)));
-            inv.generatePdf("Faktura za auta w cenach " + low + "-" + high + " PLN");
+            String pdfTitle = inv.generatePdf("FakturaZaAutaWCenach" + low + "-" + high + " PLN");
+            priceInvoices.add(pdfTitle);
         }
 
-        return null;
+        return parseLinksData();
+    }
+
+    static String getLinks(Request req, Response res){
+        return parseLinksData();
+    }
+
+    static String parseLinksData(){
+        ArrayList<ArrayList<String>> data = new ArrayList<ArrayList<String>>();
+        data.add(allCarsInvoices);
+        data.add(yearInvoices);
+        data.add(priceInvoices);
+
+        return new Gson().toJson(data);
     }
 
     static String upload(Request req, Response res) throws ServletException, IOException {
@@ -276,7 +296,6 @@ public class App {
     }
 
     static String savePhotos(Request req, Response res){
-        Gson gson = new Gson();
         UUID uuid = gson.fromJson(req.body(), SelectedId.class).getId();
         System.out.println(uuid);
 
@@ -292,7 +311,6 @@ public class App {
     }
 
     static String getPhotos(Request req, Response res){
-        Gson gson = new Gson();
         UUID uuid = gson.fromJson(req.body(), SelectedId.class).getId();
 
         for(Car c : cars){
@@ -315,9 +333,15 @@ public class App {
         return outputStream.toString();
     }
 
+    static String dimensions(Request req, Response res) throws IOException {
+        String fileName = gson.fromJson(req.body(), SelectedImage.class).getImageName();
+
+        Imaging img = new Imaging(fileName);
+        return img.getDimensions();
+    }
+
     static String rotate(Request req, Response res) throws IOException {
         System.out.println(req.body());
-        Gson gson = new Gson();
         String fileName = gson.fromJson(req.body(), SelectedImage.class).getImageName();
 
         Imaging img = new Imaging(fileName);
@@ -326,7 +350,6 @@ public class App {
 
     static String flipVertical(Request req, Response res) throws IOException {
         System.out.println(req.body());
-        Gson gson = new Gson();
         String fileName = gson.fromJson(req.body(), SelectedImage.class).getImageName();
 
         Imaging img = new Imaging(fileName);
@@ -335,11 +358,17 @@ public class App {
 
     static String flipHorizontal(Request req, Response res) throws IOException {
         System.out.println(req.body());
-        Gson gson = new Gson();
         String fileName = gson.fromJson(req.body(), SelectedImage.class).getImageName();
 
         Imaging img = new Imaging(fileName);
         return img.flipH();
+    }
+
+    private static String crop(Request req, Response res) throws IOException {
+        CropData data = gson.fromJson(req.body(), CropData.class);
+        String fileName = data.getImageName();
+        Imaging img = new Imaging(fileName);
+        return img.crop(data.getX(), data.getY(), data.getWidth(), data.getHeight());
     }
 
 }
@@ -433,5 +462,33 @@ class SelectedImage{
 
     public String getImageName() {
         return imageName;
+    }
+}
+
+class CropData{
+    String imageName;
+    int x;
+    int y;
+    int width;
+    int height;
+
+    public String getImageName() {
+        return imageName;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

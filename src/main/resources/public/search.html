@@ -19,6 +19,7 @@
             <button id="randomSearch" class="mainButton">Generuj bazę samochodów</button>
 
             <button id="allCarsInvoice">faktura za wszystkie auta</button>
+            <div id="allCarsLinks" class="linksToInv"></div>
             <select id="yearSelect">
                 <option>2000</option>
                 <option>2001</option>
@@ -31,17 +32,24 @@
             </select>
 
             <button id="yearInvoice">faktura z rocznika</button>
+            <div id="yearLinks" class="linksToInv"></div>
 
             <input type="number" name="lowest" id="inputLow">
             <input type="number" name="highest" id="inputHigh">
 
             <button id="priceInvoice">faktura z zakresu cen</button>
+            <div id="priceLinks" class="linksToInv"></div>
         </div>
         <table id="tb"></table>
     </div>
 
 
     <script>
+        let div0 = document.getElementById("allCarsLinks")
+        let div1 = document.getElementById("yearLinks")
+        let div2 = document.getElementById("priceLinks")
+
+
         load = async()=>{
             let dane = await fetchPostAsync()
             console.log(dane)
@@ -95,6 +103,11 @@
 
 
             })
+
+            let links = await fetchLinksAsync()
+            updateLinks(div0, links[0])
+            updateLinks(div1, links[1])
+            updateLinks(div2, links[2])
         }
         fetchPostAsync = async () => {
 
@@ -103,6 +116,17 @@
             };
 
             let response = await fetch("/json", options)
+
+            if (!response.ok)
+                return response.status
+            else
+                return await response.json() // response.json
+        }
+
+        fetchLinksAsync = async() =>{
+            const options = {method: "GET"};
+
+            let response = await fetch("/getLinks", options)
 
             if (!response.ok)
                 return response.status
@@ -129,12 +153,15 @@
 
         document.getElementById("allCarsInvoice").onclick = async()=>{
             let d = await generateInv(0, 0, 0)
+            updateLinks(div0, d[0])
             await load();
         }
 
         document.getElementById("yearInvoice").onclick = async()=>{
             let year = document.getElementById("yearSelect").value
-            let d = await generateInv(year, 0, 0)
+            let data = await generateInv(year, 0, 0)
+            console.log(data)
+            updateLinks(div1, data[1])
             await load();
         }
 
@@ -142,6 +169,7 @@
             let low = document.getElementById("inputLow").value
             let high = document.getElementById("inputHigh").value
             let d = await generateInv(0, low, high)
+            updateLinks(div2, d[2])
             await load();
         }
 
@@ -152,13 +180,24 @@
             };
 
             let response = await fetch("/manyCarsInvoice", options)
-            console.log(response)
+            console.log(response, "RRRRRRR")
 
             if (!response.ok)
                 return response.status
             else
-                return response; // response.json
+                return response.json(); // response.json
         }
+
+        function updateLinks(div, links){
+            div.innerHTML = ""
+            links.forEach(e=>{
+                let a = document.createElement("a")
+                a.innerText = e;
+                a.setAttribute('href', "/getInvoice?uuid=" + e);
+                div.appendChild(a)
+            })
+        }
+
 
         load()
     </script>
