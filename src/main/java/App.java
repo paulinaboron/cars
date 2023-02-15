@@ -78,8 +78,7 @@ public class App {
     public static Gson gson = new Gson();
 
     public static void main(String[] args) {
-//        externalStaticFileLocation("C:\\Users\\4pa\\sparkProject\\src\\main\\resources\\public");
-        externalStaticFileLocation("C:\\Users\\pauli\\sparkProject\\src\\main\\resources\\public");
+        externalStaticFileLocation(System.getProperty("user.dir")+"\\src\\main\\resources\\public");
         post("/add", App::add);
         get("/json", App::getJson);
         post("/delete", App::delete);
@@ -210,7 +209,7 @@ public class App {
     }
 
     static String getInvoice(Request req, Response res) throws IOException {
-        String fileName = req.queryParams("uuid");
+        String fileName = req.queryParams("file");
         res.type("application/octet-stream"); //
         res.header("Content-Disposition", "attachment; filename=" + fileName); // nagłówek
 

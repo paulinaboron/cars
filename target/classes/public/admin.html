@@ -73,7 +73,7 @@
 
             if(row.invoice){
                 let link = document.createElement("a")
-                link.setAttribute('href', "/getInvoice?uuid=" + "invoice" + row.uuid + ".pdf");
+                link.setAttribute('href', "/getInvoice?file=" + "invoice" + row.uuid + ".pdf");
                 link.innerText = "pobierz"
                 linkTd.appendChild(link)
             }

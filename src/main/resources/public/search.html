@@ -193,7 +193,7 @@
             links.forEach(e=>{
                 let a = document.createElement("a")
                 a.innerText = e;
-                a.setAttribute('href', "/getInvoice?uuid=" + e);
+                a.setAttribute('href', "/getInvoice?file=" + e);
                 div.appendChild(a)
             })
         }
