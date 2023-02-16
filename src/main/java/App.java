@@ -172,7 +172,7 @@ public class App {
         }
 
         Document document = new Document(); // dokument pdf
-        String path = "src/main/resources/public/pdfs/invoice" + car.getUuid() + ".pdf"; // lokalizacja zapisu
+        String path = "pdfs/invoice" + car.getUuid() + ".pdf"; // lokalizacja zapisu
         PdfWriter.getInstance(document, new FileOutputStream(path));
         document.open();
 
@@ -214,7 +214,7 @@ public class App {
         res.header("Content-Disposition", "attachment; filename=" + fileName); // nagłówek
 
         OutputStream outputStream = res.raw().getOutputStream();
-        outputStream.write(Files.readAllBytes(Path.of("src/main/resources/public/pdfs/" + fileName))); // response pliku do przeglądarki
+        outputStream.write(Files.readAllBytes(Path.of("pdfs/" + fileName))); // response pliku do przeglądarki
         return null;
     }
 
@@ -239,7 +239,7 @@ public class App {
             Stream<Car> result2 = result.filter(s->s.price >= low);
 
             Invoice inv = new Invoice("sprzedawca", "kupujący", result2.collect(Collectors.toCollection(ArrayList::new)));
-            String pdfTitle = inv.generatePdf("FakturaZaAutaWCenach" + low + "-" + high + " PLN");
+            String pdfTitle = inv.generatePdf("FakturaZaAutaWCenach" + low + "-" + high + "PLN");
             priceInvoices.add(pdfTitle);
         }
 

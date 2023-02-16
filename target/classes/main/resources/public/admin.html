@@ -73,7 +73,7 @@
 
             if(row.invoice){
                 let link = document.createElement("a")
-                link.setAttribute('href', "/getInvoice?uuid=" + row.uuid);
+                link.setAttribute('href', "/getInvoice?file=" + "invoice" + row.uuid + ".pdf");
                 link.innerText = "pobierz"
                 linkTd.appendChild(link)
             }
@@ -105,7 +105,7 @@
         if (!response.ok)
             return response.status
         else
-            return await response // response.json
+            return response; // response.json
 
     }
 
@@ -121,7 +121,7 @@
             return response.status
         else{
             await load()
-            return await response
+            return response;
         }
             // response.json
     }

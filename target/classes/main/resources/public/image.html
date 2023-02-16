@@ -14,23 +14,37 @@
 </div>
 <div id="main">
 <div id="photoEdit">
-    <button class="mainButton">Crop</button>
+    <button class="mainButton" id="crop">Crop</button>
     <button class="mainButton" id="rotate">Rotate</button>
     <button class="mainButton" id="flipV">Flip vertical</button>
     <button class="mainButton" id="flipH">Flip horizontal</button>
 </div>
-<div id="photoContainer">
 
-</div>
+    <div id="photoContainer">
+        <canvas id="img"></canvas>
+    </div>
+
 </div>
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const imageName = urlParams.get('id')
 
-    let img = document.createElement("div")
+    let img = document.getElementById("img")
     img.style.backgroundImage = `url("/image?id=${imageName}&rand=${Math.random()}")`
 
-    document.getElementById("photoContainer").appendChild(img)
+    const body = JSON.stringify({"imageName": imageName})
+    fetch("/dimensions", { method: "post", body })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            img.style.width = data[0] + "px"
+            img.style.height = data[1] + "px"
+            img.width = data[0]
+            img.height = data[1]
+        })
+        .catch(error => console.log(error))
+
+
 
     document.getElementById("rotate").onclick = function (){
         const body = JSON.stringify({"imageName": imageName})
@@ -38,10 +52,7 @@
         fetch("/rotate", { method: "post", body })
             .then(response => response.json())
             .then(data => {
-                console.log(data)
-                img.style.backgroundImage = `url("/image?id=${data[0]}&rand=${Math.random()}")`
-                img.style.width = data[1] + "px"
-                img.style.height = data[2] + "px"
+                resize(data)
             })
             .catch(error => console.log(error)) // ew błąd
     }
@@ -69,6 +80,55 @@
             })
             .catch(error => console.log(error)) // ew błąd
     }
+
+    let ctx = img.getContext("2d");
+    let rect = {};
+    let drag = false;
+
+    img.addEventListener("mousedown", function(e) {
+        rect.startX = e.pageX - this.offsetLeft;
+        rect.startY = e.pageY - this.offsetTop;
+        drag = true;
+    });
+
+    img.addEventListener("mouseup", function(e) {
+        drag = false;
+    });
+
+    img.addEventListener("mousemove", function(e) {
+        if (drag) {
+            rect.w = (e.pageX - this.offsetLeft) - rect.startX;
+            rect.h = (e.pageY - this.offsetTop) - rect.startY ;
+            ctx.clearRect(0,0,img.width,img.height);
+            draw();
+        }
+    });
+
+    function draw() {
+        ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
+        ctx.fillRect(rect.startX, rect.startY, rect.w, rect.h);
+    }
+
+    document.getElementById("crop").onclick = function (){
+        console.log(rect)
+        const body = JSON.stringify({"imageName": imageName, x: rect.startX, y: rect.startY, width: rect.w, height: rect.h})
+
+        fetch("/crop", { method: "post", body })
+            .then(response => response.json())
+            .then(data => {
+                resize(data)
+            })
+            .catch(error => console.log(error)) // ew błąd
+    }
+
+    function resize(data){
+        img.style.backgroundImage = `url("/image?id=${data[0]}&rand=${Math.random()}")`
+        img.style.width = data[1] + "px"
+        img.style.height = data[2] + "px"
+        img.width = data[1]
+        img.height = data[2]
+    }
+
 
 </script>
 

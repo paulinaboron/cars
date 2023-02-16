@@ -34,7 +34,7 @@ public class Invoice {
 
     public String generatePdf(String subtitle) throws FileNotFoundException, DocumentException {
         Document document = new Document(); // dokument pdf
-        String path = "src/main/resources/public/pdfs/" + subtitle + time + ".pdf"; // lokalizacja zapisu
+        String path = "pdfs/" + subtitle + time + ".pdf"; // lokalizacja zapisu
         PdfWriter.getInstance(document, new FileOutputStream(path));
         document.open();
 

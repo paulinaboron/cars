@@ -85,6 +85,11 @@ td button{
     border: none;
     padding: 15px 25px;
     border-radius: 9999999px;
+    transition: .1s ease-in;
+}
+
+.mainButton:hover{
+    background-color: #543ab6;
 }
 
 td a{
@@ -95,7 +100,7 @@ td a{
 
 #update{
     visibility: hidden;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -202,6 +207,26 @@ td img{
     border-radius: 4px;
 }
 
+#deleteImageBtn{
+    position: relative;
+    top: -25px;
+    left: -50px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    background-color: rgba(59, 59, 59, 0.56);
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: .1s ease-in;
+}
+
+#deleteImageBtn:hover{
+    cursor: pointer;
+    background-color: black;
+}
+
+
+
 #photoEdit{
     display: flex;
     flex-direction: column;
@@ -215,6 +240,18 @@ td img{
     display: flex;
     padding: 0 100px;
     justify-content: space-between;
+}
+
+#color{
+    padding: 1px;
+    height: 50px;
+}
+
+.linksToInv{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 30px;
 }
 
 
